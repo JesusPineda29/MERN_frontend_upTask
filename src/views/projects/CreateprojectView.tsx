@@ -1,4 +1,4 @@
-import { data, Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "react-toastify"
@@ -22,12 +22,14 @@ export const CreateprojectView = () => {
 
     const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues: initialValues })
 
+    
     const mutation = useMutation({
         mutationFn: createProject,
-        onError: () => {
-
+        onError: (error) => {
+            toast.error(error.message)
         },
         onSuccess: (data) => {
+            console.log('desde onSuccess')
             toast.success(data)
             navigate('/')
         }
