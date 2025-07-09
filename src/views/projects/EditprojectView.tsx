@@ -17,7 +17,7 @@ export const EditprojectView = () => {
 
     if(isLoading) return 'Cargando...'
     if(isError) return <Navigate to='/404' />
-    if(data) return <EditProjectForm data={data}/>
+    if(data) return <EditProjectForm data={data} projectId={projectId}/>
 
 }
 
