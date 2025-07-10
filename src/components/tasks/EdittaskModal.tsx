@@ -1,18 +1,26 @@
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Task, TaskFormData } from '@/types/index';
 import { useForm } from 'react-hook-form';
 import TaskForm from './TaskForm';
+import { upDateTask } from '@/api/TaskAPI';
+import { toast } from 'react-toastify';
 
 
 type EditTaskModalProps = {
     data: Task
+    taskId: Task['_id']
 }
 
-export default function EditTaskModal({ data }: EditTaskModalProps) {
+export default function EditTaskModal({ data, taskId }: EditTaskModalProps) {
 
     const navigate = useNavigate()
+
+    // Obtener projectId
+    const params = useParams()
+    const projectId = params.projectId!
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm<TaskFormData>({
         defaultValues: {
@@ -21,8 +29,25 @@ export default function EditTaskModal({ data }: EditTaskModalProps) {
         }
     })
 
+
+    const queryClient = useQueryClient()
+    const { mutate } = useMutation({
+        mutationFn: upDateTask,
+        onError: (error) => {
+            toast.error(error.message)
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['editProjects', projectId] })
+            toast.success(data)
+            reset()
+            navigate(location.pathname, { replace: true })
+        }
+    })
+
+
     const handleEditTask = (formData: TaskFormData) => {
-        console.log(formData)
+        const data = { projectId, taskId, formData}
+        mutate(data)
     }
 
     return (
@@ -69,7 +94,7 @@ export default function EditTaskModal({ data }: EditTaskModalProps) {
                                     noValidate
                                 >
 
-                                    <TaskForm 
+                                    <TaskForm
                                         register={register}
                                         errors={errors}
                                     />
