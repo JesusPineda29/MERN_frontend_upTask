@@ -19,6 +19,7 @@
       "@/types/*": ["types/*"],
       "@/lib/*": ["lib/*"],
       "@/utils/*": ["utils/*"],
+      "@/locales/*": ["locales/*"],
     },
 
     
