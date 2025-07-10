@@ -14,7 +14,7 @@ export const ProjectDetailsView = () => {
     const params = useParams()
     const projectId = params.projectId!
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['editProjects', projectId],
+        queryKey: ['project', projectId],
         queryFn: () => getProjectsById(projectId),
         retry: false
     })
