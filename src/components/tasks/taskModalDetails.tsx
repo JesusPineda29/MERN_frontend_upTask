@@ -1,11 +1,12 @@
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getTaskById } from '@/api/TaskAPI';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getTaskById, updateStatus } from '@/api/TaskAPI';
 import { toast } from 'react-toastify';
 import { formatedate } from '@/utils/utils';
 import { statusTranslations } from '@/locales/es';
+import type { taskStatus } from '@/types/index';
 
 
 
@@ -28,11 +29,32 @@ export default function TaskModalDetails() {
         retry: false
     })
 
+
+    const queryClient = useQueryClient()
+    const { mutate } = useMutation({
+        mutationFn: updateStatus,
+        onError: (error) => {
+            toast.error(error.message)
+        },
+        onSuccess: (data) => {
+            toast.success(data)
+            queryClient.invalidateQueries({ queryKey: ['editProjects', projectId] })
+            queryClient.invalidateQueries({ queryKey: ['task', taskId] })
+        }
+    })
+
+
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const status = e.target.value as taskStatus
+        const data = { projectId, taskId, status }
+        mutate(data)
+    }
+
+
     if (isError) {
         toast.error(error.message, { toastId: 'error' })
         return <Navigate to={`/projects/${projectId}`} />
     }
-
 
     if (data) return (
         <>
@@ -62,8 +84,8 @@ export default function TaskModalDetails() {
                                 leaveTo="opacity-0 scale-95"
                             >
                                 <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-16">
-                                    <p className='text-sm text-slate-400'>Agregada el: { formatedate(data.createdAt)} </p>
-                                    <p className='text-sm text-slate-400'>Última actualización: { formatedate(data.updatedAt)} </p>
+                                    <p className='text-sm text-slate-400'>Agregada el: {formatedate(data.createdAt)} </p>
+                                    <p className='text-sm text-slate-400'>Última actualización: {formatedate(data.updatedAt)} </p>
                                     <Dialog.Title
                                         as="h3"
                                         className="font-black text-4xl text-slate-600 my-5"
@@ -73,13 +95,13 @@ export default function TaskModalDetails() {
                                     <div className='my-5 space-y-3'>
                                         <label className='font-bold'>Estado Actual:</label>
 
-                                        <select 
+                                        <select
                                             className='w-full p-3 bg-white border border-gray-300'
                                             defaultValue={data.status}
-                                            name="" id=""
+                                            onChange={handleChange}
                                         >
                                             {Object.entries(statusTranslations).map(([key, value]) => (
-                                                <option key={key} value="">{value} </option>
+                                                <option key={key} value={key}>{value}</option>
                                             ))}
 
                                         </select>
