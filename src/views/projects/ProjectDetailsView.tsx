@@ -4,6 +4,7 @@ import { getProjectsById } from "@/api/ProjectAPI"
 import AddTaskModal from "@/components/tasks/AddTaskModal"
 import { TaskList } from "@/components/tasks/TaskList"
 import { EditTaskData } from "@/components/tasks/EditTaskData"
+import TaskModalDetails from "@/components/tasks/taskModalDetails"
 
 
 
@@ -14,7 +15,7 @@ export const ProjectDetailsView = () => {
     const params = useParams()
     const projectId = params.projectId!
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['project', projectId],
+        queryKey: ['editProjects', projectId],
         queryFn: () => getProjectsById(projectId),
         retry: false
     })
@@ -41,6 +42,7 @@ export const ProjectDetailsView = () => {
 
             <AddTaskModal />
             <EditTaskData />
+            <TaskModalDetails /> 
         </>
     )
 }
