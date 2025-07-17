@@ -13,8 +13,6 @@ export const AuthLayout = () => {
                     </div>
                 </div>
             </div>
-
-            <Outlet />
         </>
     )
 }
