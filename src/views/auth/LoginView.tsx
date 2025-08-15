@@ -41,7 +41,7 @@ export default function LoginView() {
 
       <form
         onSubmit={handleSubmit(handleLogin)}
-        className="space-y-8 p-10 mt-10 bg-white"
+        className="space-y-8 p-10 mt-10 bg-white rounded-2xl"
         noValidate
       >
         <div className="flex flex-col gap-5">
