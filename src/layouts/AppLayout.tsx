@@ -17,7 +17,7 @@ export const AppLayout = () => {
         return <Navigate to='/auth/login'/>
     }
 
-    return (
+    if(data) return (
         <>
 
             <header className="bg-gray-800 py-5">
@@ -27,7 +27,9 @@ export const AppLayout = () => {
                             <Logo />
                         </Link>
                     </div>
-                    <NavMenu />
+                    <NavMenu 
+                        name={data.name}
+                    />
                 </div>
             </header>
 
